@@ -21,6 +21,13 @@ def main() -> None:
     args = parser.parse_args()
 
     match args.command:
+
+        case "build":
+            idx = Inverted_index()
+            idx.build()
+            idx.save(CACHE_DIR)
+            pass
+
         case "search":
             idx = Inverted_index()
             try:
@@ -34,22 +41,21 @@ def main() -> None:
                 movie = idx.docmap[doc]
                 print(f"{i}. id: {movie['id']} title: {movie['title']}")
             pass
-        case "build":
-            idx = Inverted_index()
-            idx.build()
-            idx.save(CACHE_DIR)
-            pass
+
         case _:
             parser.print_help()
 
 
 def exec_search(query, idx):
+
     q = util.process_string(query)
     result = set()
+
     for query_token in q:
         result.update(idx.get_documents(query_token))
         if len(result) >= 5:
             break
+
     return sorted(result)[:5]
 
 
