@@ -1,6 +1,7 @@
+import math
 import pickle
-from pathlib import Path
 from collections import Counter, defaultdict
+from pathlib import Path
 
 import util
 
@@ -19,12 +20,20 @@ class Inverted_index:
             self.term_frequencies[doc_id][token] += 1
 
     def get_documents(self, term):
-        ids = self.index.get(term.lower(), set())
+        ids = self.index.get(util.process_string(term)[0], set())
         return sorted(ids)
 
     def get_tf(self, doc_id, term):
         if self.term_frequencies[doc_id]:
             return self.term_frequencies[doc_id][term]
+        return 0
+
+    def get_idf(self, term):
+        token = util.process_string(term)[0]
+        if token in self.index:
+            df = len(self.index[token])
+            idf = math.log((len(self.docmap) + 1) / (df + 1))
+            return idf
         return 0
 
     def build(self):
